@@ -49,6 +49,7 @@ func TestAddGetDelete(t *testing.T) {
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
 	g, err := store.Get(i)
 	require.NoError(t, err)
+	assert.Equal(t, i, g.Number)
 	assert.Equal(t, parcel.Client, g.Client)
 	assert.Equal(t, parcel.Address, g.Address)
 	assert.Equal(t, parcel.Status, g.Status)
@@ -160,23 +161,19 @@ func TestGetByClient(t *testing.T) {
 	// убедитесь в отсутствии ошибки
 	require.NoError(t, err)
 	// убедитесь, что количество полученных посылок совпадает с количеством добавленных
-	require.Len(t, storedParcels, 3)
+	assert.Len(t, storedParcels, 3)
 
 	// check
 	for _, parcel := range storedParcels {
 		// в parcelMap лежат добавленные посылки, ключ - идентификатор посылки, значение - сама посылка
 		// убедитесь, что все посылки из storedParcels есть в parcelMap
-		require.Equal(t, parcel, parcelMap[parcel.Number])
-		// убедитесь, что значения полей полученных посылок заполнены верно
-		originalParcel, ok := parcelMap[parcel.Number]
+		_, ok := parcelMap[parcel.Number]
 		if !ok {
 			t.Errorf("посылки с номером %d нет в parcelMap", parcel.Number)
 			continue
 		}
-		assert.Equal(t, parcel.Client, originalParcel.Client)
-		assert.Equal(t, parcel.Status, originalParcel.Status)
-		assert.Equal(t, parcel.Address, originalParcel.Address)
-		assert.Equal(t, parcel.CreatedAt, originalParcel.CreatedAt)
+		// убедитесь, что значения полей полученных посылок заполнены верно
+		assert.Equal(t, parcel, parcelMap[parcel.Number])
 	}
 
 }
